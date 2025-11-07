@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Interactive AI Engineer Career Transition Roadmap - A detailed, production-focused curriculum for job readiness">
+    <title>AI Engineer Career Roadmap</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4f46e5; /* Indigo 600 */
+            --primary-dark: #4338ca; /* Indigo 700 */
+            --secondary: #10b981; /* Emerald 500 */
+            --accent: #d946ef; /* Fuchsia 500 */
+            --danger: #ef4444; /* Red 500 */
+            --light: #f8fafc; /* Slate 50 */
+            --dark: #1e293b; /* Slate 800 */
+            --gray: #64748b; /* Slate 500 */
+            --gray-light: #e2e8f0; /* Slate 200 */
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .phase-content {
+            display: none;
+            animation: fadeInUp 0.4s ease-out;
+        }
+        
+        .phase-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .info-card {
+            @apply bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+        }
+        
+        .info-card h3 {
+            @apply text-lg font-semibold text-gray-900 px-6 py-4 bg-gray-50/70 border-b border-gray-100 flex items-center;
+        }
+        
+        .info-card ul {
+            @apply list-none p-6 space-y-3 flex-grow;
+        }
+        
+        .info-card li {
+            @apply flex items-start;
+        }
+        
+        .info-card li span {
+            @apply mr-3 flex-shrink-0 text-indigo-600 font-semibold;
+        }
+        
+        .info-card li a {
+            @apply text-indigo-600 hover:text-indigo-800 hover:underline break-words transition-colors;
+        }
+        
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background-color: var(--gray-light);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            border-radius: 3px;
+            transition: width 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+            width: 0; /* Animated by JS */
+        }
+        
+        /* New Phase Indicator */
+        .phase-indicator-wrapper {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            position: relative;
+            max-w-3xl mx-auto;
+        }
+        
+        .phase-indicator-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-color: var(--gray-light);
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+
+        .phase-indicator-progress {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            height: 4px;
+            background-color: var(--primary);
+            transform: translateY(-50%);
+            z-index: 2;
+            width: 0; /* Controlled by JS */
+            transition: width 0.5s ease-in-out;
+        }
+        
+        .phase-step {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background-color: white;
+            border: 4px solid var(--gray-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            position: relative;
+            z-index: 3;
+            transition: all 0.3s ease;
+            color: var(--gray);
+        }
+        
+        .phase-step.active {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            transform: scale(1.15);
+            box-shadow: 0 0 15px rgba(79, 70, 229, 0.5);
+        }
+        
+        .phase-step.completed {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+            color: white;
+        }
+        
+        .resource-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .resource-link i {
+            font-size: 0.8rem;
+        }
+        
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: var(--primary);
+            color: white;
+            padding: 8px;
+            border-radius: 4px;
+            z-index: 100;
+            transition: top 0.3s;
+        }
+        
+        .skip-link:focus {
+            top: 6px;
+        }
+        
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        .curriculum-toggle {
+            @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300;
+        }
+        
+        .curriculum-toggle.advanced {
+            @apply bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700;
+        }
+        
+        /* Animated Advanced Content */
+        .advanced-content-wrapper {
+             max-height: 0;
+             overflow: hidden;
+             transition: max-height 0.5s ease-out;
+        }
+        
+        .advanced-mode .advanced-content-wrapper {
+             max-height: 1000px; /* large number to allow content to expand */
+        }
+        
+        .advanced-content {
+            @apply border-t border-gray-200 mt-4 pt-4 px-6 pb-2;
+        }
+
+        .advanced-badge {
+            @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 ml-2;
+        }
+
+        .advanced-mode #phase-nav {
+            @apply md:grid-cols-7;
+        }
+        
+        .timeline-estimate {
+            @apply inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full ml-2;
+        }
+        
+        /* Animation Observer */
+        [data-animate] {
+            opacity: 0;
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+        
+        [data-animate="fade-in-up"] {
+            transform: translateY(30px);
+        }
+
+        [data-animate].is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12 relative overflow-hidden py-8 rounded-xl bg-slate-50">
+            <div class="flex justify-between items-center mb-6 px-6">
+                <div></div> <button id="curriculum-toggle" class="curriculum-toggle">
+                    <i class="fas fa-graduation-cap mr-2"></i>Switch to Advanced Curriculum
+                </button>
+            </div>
+            
+            <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl mb-4">
+                <i class="fas fa-brain mr-3 text-indigo-500"></i>AI Engineer Career Transition Roadmap
+                <span id="curriculum-badge" class="advanced-badge" style="display: none;">Advanced</span>
+            </h1>
+            <p class="mt-4 text-lg leading-8 text-gray-600 max-w-3xl mx-auto">
+                A detailed, production-focused curriculum for job readiness. This interactive guide helps you navigate the path from foundational skills to advanced Generative AI and MLOps.
+            </p>
+            
+            <div class="mt-8 max-w-3xl mx-auto px-4">
+                <div class="phase-indicator-wrapper">
+                    <div class="phase-indicator-progress" id="phase-progress-bar"></div>
+                    <div class="phase-step" data-phase="1" title="Phase 1: Foundations">
+                        <span>1</span>
+                    </div>
+                    <div class="phase-step" data-phase="2" title="Phase 2: Core ML">
+                        <span>2</span>
+                    </div>
+                    <div class="phase-step" data-phase="3" title="Phase 3: Deep Learning">
+                        <span>3</span>
+                    </div>
+                    <div class="phase-step advanced-step" data-phase="3.5" title="Phase 3.5: Specialized Applications" style="display: none;">
+                        <span>3.5</span>
+                    </div>
+                    <div class="phase-step" data-phase="4" title="Phase 4: Generative AI">
+                        <span>4</span>
+                    </div>
+                    <div class="phase-step" data-phase="5" title="Phase 5: MLOps & Jobs">
+                        <span>5</span>
+                    </div>
+                    <div class="phase-step advanced-step" data-phase="6" title="Phase 6: Advanced Topics" style="display: none;">
+                        <span>6</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content">
+            <div class="mb-8 bg-white rounded-lg shadow-sm border border-gray-100">
+                <nav class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 p-3" aria-label="Curriculum Phases" id="phase-nav">
+                    <button id="phase-1-btn" class="tab-btn" aria-selected="true" aria-controls="phase-1-content">
+                        <i class="fas fa-layer-group mr-2"></i>Phase 1
+                    </button>
+                    <button id="phase-2-btn" class="tab-btn" aria-selected="false" aria-controls="phase-2-content">
+                        <i class="fas fa-cogs mr-2"></i>Phase 2
+                    </button>
+                    <button id="phase-3-btn" class="tab-btn" aria-selected="false" aria-controls="phase-3-content">
+                        <i class="fas fa-brain mr-2"></i>Phase 3
+                    </button>
+                    <button id="phase-3.5-btn" class="tab-btn advanced-tab" aria-selected="false" aria-controls="phase-3.5-content" style="display: none;">
+                        <i class="fas fa-puzzle-piece mr-2"></i>Phase 3.5
+                    </button>
+                    <button id="phase-4-btn" class="tab-btn" aria-selected="false" aria-controls="phase-4-content">
+                        <i class="fas fa-magic mr-2"></i>Phase 4
+                    </button>
+                    <button id="phase-5-btn" class="tab-btn" aria-selected="false" aria-controls="phase-5-content">
+                        <i class="fas fa-rocket mr-2"></i>Phase 5
+                    </button>
+                    <button id="phase-6-btn" class="tab-btn advanced-tab" aria-selected="false" aria-controls="phase-6-content" style="display: none;">
+                        <i class="fas fa-flask mr-2"></i>Phase 6
+                    </button>
+                </nav>
+            </div>
+
+            <div id="phase-content-container">
+                <section id="phase-1-content" class="phase-content active" aria-labelledby="phase-1-title" role="tabpanel">
+                    <div class="text-center mb-10">
+                        <h2 id="phase-1-title" class="text-3xl font-semibold text-gray-900">PHASE 1: Foundational Competence & Data Toolkit</h2>
+                        <p class="mt-2 text-md text-gray-600">(4-6 Weeks) Establish a rock-solid, practical foundation in Python, data manipulation, and developer tools.</p>
+                        
+                        <div class="mt-4 max-w-md mx-auto">
+                            <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                <span>Progress</span>
+                                <span>15%</span>
+                            </div>
+                            <div class="progress-bar" data-animate="progress">
+                                <div class="progress-fill" data-width="15%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-code mr-2 text-indigo-500"></i>1. Python Mastery</h3>
+                            <ul>
+                                <li><span>Core:</span> Core Syntax, OOP, Data Structures, Basic Algorithms, Virtual Environments.</li>
+                                <li><span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Mandatory:</span> Deep dive into Python fundamentals.</li>
+                            </ul>
+                            
+                            <div class="advanced-content-wrapper">
+                                <div class="advanced-content">
+                                    <h4 class="font-semibold text-gray-800 mb-2">Enhanced Content:</h4>
+                                    <ul class="space-y-2 p-0">
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Python testing (pytest)</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Debugging techniques</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Code documentation (docstrings, type hints)</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Basic software design patterns</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </article>
+                        
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-chart-bar mr-2 text-indigo-500"></i>2. Data Science Stack</h3>
+                            <ul>
+                                <li><span>Core:</span> Arrays, Linear Algebra (NumPy), DataFrames (Pandas), Data Visualization (Matplotlib).</li>
+                                <li><span class="text-orange-500"><i class="fas fa-book-open mr-1"></i>Elective (NumPy):</span> <a href="https://www.w3schools.com/python/numpy/default.asp" target="_blank" rel="noopener noreferrer" class="resource-link">Numpy <i class="fas fa-external-link-alt"></i></a></li>
+                                <li><span class="text-orange-500"><i class="fas fa-book-open mr-1"></i>Elective (Pandas):</span> <a href="https://www.w3schools.com/python/pandas/default.asp" target="_blank" rel="noopener noreferrer" class="resource-link">Pandas <i class="fas fa-external-link-alt"></i></a></li>
+                                <li><span class="text-orange-500"><i class="fas fa-book-open mr-1"></i>Elective (Matplotlib):</span> <a href="https://www.w3schools.com/python/matplotlib_intro.asp" target="_blank" rel="noopener noreferrer" class="resource-link">Matplotlib <i class="fas fa-external-link-alt"></i></a></li>
+                            </ul>
+                        </article>
+
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-tools mr-2 text-indigo-500"></i>3. Development Environment</h3>
+                            <ul>
+                                <li><span>Core:</span> Command Line (Bash), Version Control (Git), Linux basics, REST API concepts.</li>
+                                <li><span>Secondary:</span> Git, Linux, REST API, FastAPI basics.</li>
+                                <li><span class="text-orange-500"><i class="fas fa-book-open mr-1"></i>Elective (Bash):</span> <a href="https://www.w3schools.com/bash/index.php" target="_blank" rel="noopener noreferrer" class="resource-link">Bash <i class="fas fa-external-link-alt"></i></a></li>
+                            </ul>
+                        </article>
+
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-network-wired mr-2 text-indigo-500"></i>4. Neural Networks Intro</h3>
+                            <ul>
+                                <li><span>Core:</span> Conceptual understanding of what a neural network is and how it learns (before diving into Deep Learning frameworks).</li>
+                                <li><span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Mandatory (NN):</span> <a href="https://www.youtube.com/watch?v=w8yWXqWQYmU" target="_blank" rel="noopener noreferrer" class="resource-link">Neural Networks <i class="fas fa-external-link-alt"></i></a></li>
+                            </ul>
+                            
+                            <div class="advanced-content-wrapper">
+                                <div class="advanced-content">
+                                    <h4 class="font-semibold text-gray-800 mb-2">Mathematics Fundamentals:</h4>
+                                    <ul class="space-y-2 p-0">
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Linear Algebra (vectors, matrices, eigenvalues)</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Calculus (differentiation, gradients)</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Probability & Statistics (distributions, hypothesis testing)</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Basic Optimization concepts</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="phase-2-content" class="phase-content" aria-labelledby="phase-2-title" role="tabpanel" hidden>
+                    <div class="text-center mb-10">
+                        <h2 id="phase-2-title" class="text-3xl font-semibold text-gray-900">PHASE 2: Core Machine Learning & MLOps Basics</h2>
+                        <p class="mt-2 text-md text-gray-600">(6-8 Weeks) Master classical ML algorithms, the modeling pipeline, and essential MLOps concepts.</p>
+                        
+                        <div class="mt-4 max-w-md mx-auto">
+                            <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                <span>Progress</span>
+                                <span>35%</span>
+                            </div>
+                            <div class="progress-bar" data-animate="progress">
+                                <div class="progress-fill" data-width="35%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-project-diagram mr-2 text-indigo-500"></i>1. Classical ML</h3>
+                            <ul>
+                                <li><span>Core:</span> Supervised Learning (Regression, Classification), Unsupervised Learning (Clustering, Dimensionality Reduction).</li>
+                                <li><span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Mandatory (Models):</span> <a href="https://youtu.be/E0Hmnixke2g?si=CJ6bLDeD1l4AIaM5" target="_blank" rel="noopener noreferrer" class="resource-link">ML models (Video) <i class="fas fa-external-link-alt"></i></a></li>
+                                <li><span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Mandatory (Models):</span> <a href="https://www.geeksforgeeks.org/machine-learning/machine-learning-models/" target="_blank" rel="noopener noreferrer" class="resource-link">ML Models (Article) <i class="fas fa-external-link-alt"></i></a></li>
+                            </ul>
+                            
+                            <div class="advanced-content-wrapper">
+                                <div class="advanced-content">
+                                    <h4 class="font-semibold text-gray-800 mb-2">Additional Algorithms:</h4>
+                                    <ul class="space-y-2 p-0">
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Ensemble methods (Random Forest, Gradient Boosting - XGBoost, LightGBM)</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Time Series Analysis and forecasting</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Anomaly Detection techniques</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Recommendation Systems (collaborative filtering, content-based)</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </article>
+                        
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-sitemap mr-2 text-indigo-500"></i>2. Modeling Workflow</h3>
+                            <ul>
+                                <li><span>Core:</span> Scikit-learn Pipelines, Feature Engineering, Model Training, Hyperparameter Tuning.</li>
+                                <li><span>Additional:</span> Scikit-learn, Metrics, Data Engineering.</li>
+                            </ul>
+                        </article>
+
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-chart-line mr-2 text-indigo-500"></i>3. Model Evaluation</h3>
+                            <ul>
+                                <li><span>Core:</span> Metrics (Precision, Recall, F1, AUC, R²), Confusion Matrices, Bias-Variance Tradeoff.</li>
+                                <li><span>Focus:</span> Focus on choosing the right metric for the business problem.</li>
+                            </ul>
+                        </article>
+
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-clipboard-check mr-2 text-indigo-500"></i>4. Experiment Tracking</h3>
+                            <ul>
+                                <li><span>Core:</span> Introduction to tracking models, parameters, and metrics for reproducibility.</li>
+                                <li><span>Additional:</span> MLflow basics, Scikit-learn pipelines.</li>
+                                <li><span class="text-orange-500"><i class="fas fa-book-open mr-1"></i>Elective (What is MLOps):</span> <a href="https://www.youtube.com/watch?v=OejCJL2EC3k" target="_blank" rel="noopener noreferrer" class="resource-link">What is MLOps <i class="fas fa-external-link-alt"></i></a></li>
+                                <li><span class="text-orange-500"><i class="fas fa-book-open mr-1"></i>Elective (MLOps):</span> <a href="https://www.youtube.com/watch?v=-dJPoLm_gtE" target="_blank" rel="noopener noreferrer" class="resource-link">MLOps <i class="fas fa-external-link-alt"></i></a></li>
+                            </ul>
+                            
+                            <div class="advanced-content-wrapper">
+                                <div class="advanced-content">
+                                    <h4 class="font-semibold text-gray-800 mb-2">MLOps Foundations:</h4>
+                                    <ul class="space-y-2 p-0">
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Data versioning (DVC)</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Basic model serialization</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Introduction to ML pipelines</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+                
+                <section id="phase-3-content" class="phase-content" aria-labelledby="phase-3-title" role="tabpanel" hidden>
+                    <div class="text-center mb-10">
+                        <h2 id="phase-3-title" class="text-3xl font-semibold text-gray-900">PHASE 3: Deep Learning & Representation Architectures</h2>
+                        <p class="mt-2 text-md text-gray-600">(8-10 Weeks) Master Deep Learning fundamentals and specialized architectures for Vision and Sequence data.</p>
+                        
+                        <div class="mt-4 max-w-md mx-auto">
+                            <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                <span>Progress</span>
+                                <span>55%</span>
+                            </div>
+                            <div class="progress-bar" data-animate="progress">
+                                <div class="progress-fill" data-width="55%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-cube mr-2 text-indigo-500"></i>1. DL Frameworks</h3>
+                            <ul>
+                                <li><span>Core:</span> Core use of TensorFlow and PyTorch for building and training simple neural networks.</li>
+                                <li><span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Mandatory (TF Course):</span> <a href="https://www.youtube.com/watch?v=tPYj3fFJGjk" target="_blank" rel="noopener noreferrer" class="resource-link">Tensorflow full course <i class="fas fa-external-link-alt"></i></a></li>
+                                <li><span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Mandatory (PyTorch):</span> <a href="https://www.tutorialspoint.com/pytorch/index.htm" target="_blank" rel="noopener noreferrer" class="resource-link">PyTorch <i class="fas fa-external-link-alt"></i></a></li>
+                                <li><span class="text-orange-500"><i class="fas fa-book-open mr-1"></i>Elective (PyTorch Course):</span> <a href="https://www.youtube.com/watch?v=V_xro1bcAuA" target="_blank" rel="noopener noreferrer" class="resource-link">PyTorch full course <i class="fas fa-external-link-alt"></i></a></li>
+                                <li><span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Mandatory (Choice):</span> <a href="https://youtu.be/z-ZR_8BZ1wQ?si=Sh8s4wgZWHJLApPW" target="_blank" rel="noopener noreferrer" class="resource-link">Choice of libraries <i class="fas fa-external-link-alt"></i></a></li>
+                                <li><span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Mandatory (Choosing):</span> <a href="https://youtu.be/iyHkg7TmHmE?si=L9DJj8eVhZp4KLM3" target="_blank" rel="noopener noreferrer" class="resource-link">Choosing the right one <i class="fas fa-external-link-alt"></i></a></li>
+                            </ul>
+                        </article>
+                        
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-sliders-h mr-2 text-indigo-500"></i>2. Advanced DL Concepts</h3>
+                            <ul>
+                                <li><span>Core:</span> Optimizers (SGD, Adam), Regularization, Transfer Learning, Fine-Tuning.</li>
+                                <li><span>Additional:</span> Optimizers, Regularization, Transfer Learning, Fine-tuning.</li>
+                            </ul>
+                        </article>
+
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-stream mr-2 text-indigo-500"></i>3. Sequence Models</h3>
+                            <ul>
+                                <li><span>Core:</span> Recurrent Neural Networks (RNNs), Long Short-Term Memory (LSTM), Attention Mechanism.</li>
+                                <li><span class="text-orange-500"><i class="fas fa-book-open mr-1"></i>Elective (RNN):</span> <a href="https://youtu.be/AsNTP8Kwu80?si=h_rn3xR-j2hvXStO" target="_blank" rel="noopener noreferrer" class="resource-link">RNN <i class="fas fa-external-link-alt"></i></a></li>
+                                <li><span class="text-orange-500"><i class="fas fa-book-open mr-1"></i>Elective (LSTM):</span> <a href="https://youtu.be/YCzL96nL7j0?si=lrso2yInROLwjlaC" target="_blank" rel="noopener noreferrer" class="resource-link">LSTM <i class="fas fa-external-link-alt"></i></a></li>
+                                <li><span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Mandatory (Attention):</span> <a href="https://www.deeplearning.ai/short-courses/attention-in-transformers-concepts-and-code-in-pytorch/" target="_blank" rel="noopener noreferrer" class="resource-link">Attention in Transformers <i class="fas fa-external-link-alt"></i></a></li>
+                            </ul>
+                        </article>
+
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-eye mr-2 text-indigo-500"></i>4. CV & Optimization</h3>
+                            <ul>
+                                <li><span>Core:</span> Convolutional Neural Networks (CNNs), Model Pruning, Quantization, Distillation (conceptual).</li>
+                                <li><span>Additional:</span> Quantization, Pruning, Distillation.</li>
+                            </ul>
+                        </article>
+                    </div>
+                </section>
+                
+                <section id="phase-3.5-content" class="phase-content advanced-phase" aria-labelledby="phase-3.5-title" role="tabpanel" hidden>
+                    <div class="text-center mb-10">
+                        <h2 id="phase-3.5-title" class="text-3xl font-semibold text-gray-900">PHASE 3.5: Specialized ML Applications</h2>
+                        <p class="mt-2 text-md text-gray-600">(8-10 Weeks) Deep dive into specialized applications of machine learning across different domains.</p>
+                        
+                        <div class="mt-4 max-w-md mx-auto">
+                            <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                <span>Progress</span>
+                                <span>65%</span>
+                            </div>
+                            <div class="progress-bar" data-animate="progress">
+                                <div class="progress-fill" data-width="65%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-eye mr-2 text-indigo-500"></i>Computer Vision Deep Dive</h3>
+                            <ul>
+                                <li><span>Core:</span> Object detection (YOLO, Faster R-CNN)</li>
+                                <li><span>Core:</span> Image segmentation (U-Net, Mask R-CNN)</li>
+                                <li><span>Core:</span> Image generation (VAEs, GANs basics)</li>
+                                <li><span>Core:</span> Optical Character Recognition (OCR)</li>
+                            </ul>
+                        </article>
+                        
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-language mr-2 text-indigo-500"></i>Natural Language Processing</h3>
+                            <ul>
+                                <li><span>Core:</span> Text preprocessing and feature extraction</li>
+                                <li><span>Core:</span> Word embeddings (Word2Vec, GloVe)</li>
+                                <li><span>Core:</span> Named Entity Recognition (NER)</li>
+                                <li><span>Core:</span> Sentiment analysis</li>
+                                <li><span>Core:</span> Text classification</li>
+                            </ul>
+                        </article>
+
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-chart-line mr-2 text-indigo-500"></i>Time Series & Forecasting</h3>
+                            <ul>
+                                <li><span>Core:</span> ARIMA, Prophet</li>
+                                <li><span>Core:</span> LSTM for time series</li>
+                                <li><span>Core:</span> Feature engineering for temporal data</li>
+                            </ul>
+                        </article>
+
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-industry mr-2 text-indigo-500"></i>Industry Applications</h3>
+                            <ul>
+                                <li><span>Core:</span> Healthcare AI (medical imaging, drug discovery)</li>
+                                <li><span>Core:</span> Financial AI (fraud detection, algorithmic trading)</li>
+                                <li><span>Core:</span> Retail AI (demand forecasting, personalization)</li>
+                                <li><span>Core:</span> Manufacturing AI (predictive maintenance, quality control)</li>
+                            </ul>
+                        </article>
+                    </div>
+                </section>
+                
+                <section id="phase-4-content" class="phase-content" aria-labelledby="phase-4-title" role="tabpanel" hidden>
+                    <div class="text-center mb-10">
+                        <h2 id="phase-4-title" class="text-3xl font-semibold text-gray-900">PHASE 4: Generative AI, LLMs, and Agentic Systems</h2>
+                        <p class="mt-2 text-md text-gray-600">(8-10 Weeks) Master the modern AI landscape, from Transformers and RAG to building multi-step AI agents.</p>
+                        
+                        <div class="mt-4 max-w-md mx-auto">
+                            <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                <span>Progress</span>
+                                <span>85%</span>
+                            </div>
+                            <div class="progress-bar" data-animate="progress">
+                                <div class="progress-fill" data-width="85%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-exchange-alt mr-2 text-indigo-500"></i>1. Transformer Ecosystem</h3>
+                            <ul>
+                                <li><span>Core:</span> Transformer Architecture (BERT, GPT), Prompt Engineering, Fine-tuning, Open-source model usage.</li>
+                                <li><span>Additional:</span> HuggingFace Transformers, Transformer Architecture.</li>
+                                <li><span class="text-orange-500"><i class="fas fa-book-open mr-1"></i>Elective (Transfer):</span> <a href="https://youtu.be/BqqfQnyjmgg?si=j7gwfUnwyeTNgS1H" target="_blank" rel="noopener noreferrer" class="resource-link">Transfer learning <i class="fas fa-external-link-alt"></i></a></li>
+                                <li><span class="text-orange-500"><i class="fas fa-book-open mr-1"></i>Elective (Prompt Eng):</span> <a href="https://www.youtube.com/watch?v=p09yRj47kNM" target="_blank" rel="noopener noreferrer" class="resource-link">Prompt Engineering <i class="fas fa-external-link-alt"></i></a></li>
+                                <li><span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Mandatory (HF):</span> <a href="https://www.deeplearning.ai/short-courses/open-source-models-hugging-face/" target="_blank" rel="noopener noreferrer" class="resource-link">HuggingFace <i class="fas fa-external-link-alt"></i></a></li>
+                                <li><span class="text-orange-500"><i class="fas fa-book-open mr-1"></i>Elective (Quantize):</span> <a href="https://www.deeplearning.ai/short-courses/quantization-fundamentals-with-hugging-face/" target="_blank" rel="noopener noreferrer" class="resource-link">Quantization Fundamentals <i class="fas fa-external-link-alt"></i></a></li>
+                            </ul>
+                            
+                            <div class="advanced-content-wrapper">
+                                <div class="advanced-content">
+                                    <h4 class="font-semibold text-gray-800 mb-2">Advanced LLM Topics:</h4>
+                                    <ul class="space-y-2 p-0">
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Fine-tuning techniques (LoRA, QLoRA, P-tuning)</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Model quantization (GGUF, GPTQ, AWQ)</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Prompt engineering advanced patterns (chain-of-thought, self-consistency)</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>LLM evaluation frameworks (HELM, MT-Bench)</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Multimodal models (GPT-4V, LLaVA, CLIP)</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </article>
+                        
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-database mr-2 text-indigo-500"></i>2. RAG & Vector Databases</h3>
+                            <ul>
+                                <li><span>Core:</span> RAG fundamentals, chunking, embedding, vector search, and choosing a Vector Database.</li>
+                                <li><span>Additional:</span> RAG, Vector Databases.</li>
+                                <li><span class="text-orange-500"><i class="fas fa-book-open mr-1"></i>Elective (Vector DBs):</span> <a href="https://www.deeplearning.ai/short-courses/building-applications-vector-databases/" target="_blank" rel="noopener noreferrer" class="resource-link">Building Applications with Vector Databases <i class="fas fa-external-link-alt"></i></a></li>
+                                <li><span class="text-orange-500"><i class="fas fa-book-open mr-1"></i>Elective (Retrieval):</span> <a href="https://www.deeplearning.ai/short-courses/advanced-retrieval-for-ai/" target="_blank" rel="noopener noreferrer" class="resource-link">Advanced Retrieval for AI with Chroma <i class="fas fa-external-link-alt"></i></a></li>
+                            </ul>
+                            
+                            <div class="advanced-content-wrapper">
+                                <div class="advanced-content">
+                                    <h4 class="font-semibold text-gray-800 mb-2">Advanced RAG:</h4>
+                                    <ul class="space-y-2 p-0">
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Query transformation</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Hybrid search (keyword + vector)</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Reranking models</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Multi-hop RAG</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Graph RAG</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-robot mr-2 text-indigo-500"></i>3. LLM Orchestration & Agents</h3>
+                            <ul>
+                                <li><span>Core:</span> LangChain/LlamaIndex for applications, LangGraph for multi-step agents, and evaluation of RAG systems.</li>
+                                <li><span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Mandatory (LangChain):</span> <a href="https://www.deeplearning.ai/short-courses/langchain-for-llm-application-development/" target="_blank" rel="noopener noreferrer" class="resource-link">LangChain for LLM Application Development <i class="fas fa-external-link-alt"></i></a></li>
+                                <li><span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Mandatory (Chat Data):</span> <a href="https://www.deeplearning.ai/short-courses/langchain-chat-with-your-data/" target="_blank" rel="noopener noreferrer" class="resource-link">LangChain: Chat with Your Data <i class="fas fa-external-link-alt"></i></a></li>
+                                <li><span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Mandatory (LLMs Work):</span> <a href="https://www.deeplearning.ai/short-courses/how-transformer-llms-work/" target="_blank" rel="noopener noreferrer" class="resource-link">How Transformer LLMs Work <i class="fas fa-external-link-alt"></i></a></li>
+                                <li><span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Mandatory (Eval RAG):</span> <a href="https://www.deeplearning.ai/short-courses/building-evaluating-advanced-rag/" target="_blank" rel="noopener noreferrer" class="resource-link">Building and Evaluating Advanced RAG <i class="fas fa-external-link-alt"></i></a></li>
+                                <li><span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Mandatory (Agentic RAG):</span> <a href="https://www.deeplearning.ai/short-courses/building-agentic-rag-with-llamaindex/" target="_blank" rel="noopener noreferrer" class="resource-link">Building Agentic RAG with LlamaIndex <i class="fas fa-external-link-alt"></i></a></li>
+                                <li><span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Mandatory (LangGraph):</span> <a href="https://www.deeplearning.ai/short-courses/ai-agents-in-langgraph/" target="_blank" rel="noopener noreferrer" class="resource-link">AI Agents in LangGraph <i class="fas fa-external-link-alt"></i></a></li>
+                                <li><span class="text-orange-500"><i class="fas fa-book-open mr-1"></i>Elective (Workflows):</span> <a href="https://www.deeplearning.ai/short-courses/event-driven-agentic-document-workflows/" target="_blank" rel="noopener noreferrer" class="resource-link">Event-Driven Agentic Document Workflows <i class="fas fa-external-link-alt"></i></a></li>
+                            </ul>
+                            
+                            <div class="advanced-content-wrapper">
+                                <div class="advanced-content">
+                                    <h4 class="font-semibold text-gray-800 mb-2">AI Agents:</h4>
+                                    <ul class="space-y-2 p-0">
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Tool usage (ReAct pattern)</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Multi-agent systems</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Planning and reasoning (Tree of Thought, Graph of Thought)</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Agent evaluation (AgentBench, WebArena)</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-camera mr-2 text-indigo-500"></i>4. Advanced Applied CV</h3>
+                            <ul>
+                                <li><span>Core:</span> Object Detection (YOLO), Semantic Segmentation (U-Net), OCR.</li>
+                                <li><span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Mandatory (YOLO):</span> <a href="https://youtu.be/ag3DLKsl2vk" target="_blank" rel="noopener noreferrer" class="resource-link">YOLO <i class="fas fa-external-link-alt"></i></a></li>
+                                <li><span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Mandatory (U-Net):</span> <a href="https://youtu.be/NhdzGfB1q74" target="_blank" rel="noopener noreferrer" class="resource-link">U-Net <i class="fas fa-external-link-alt"></i></a></li>
+                                <li><span class="text-orange-500"><i class="fas fa-book-open mr-1"></i>Elective (Multimodal):</span> <a href="https://www.deeplearning.ai/short-courses/building-multimodal-search-and-rag/" target="_blank" rel="noopener noreferrer" class="resource-link">Building Multimodal Search and RAG <i class="fas fa-external-link-alt"></i></a></li>
+                            </ul>
+                        </article>
+                    </div>
+                </section>
+                
+                <section id="phase-5-content" class="phase-content" aria-labelledby="phase-5-title" role="tabpanel" hidden>
+                    <div class="text-center mb-10">
+                        <h2 id="phase-5-title" class="text-3xl font-semibold text-gray-900">PHASE 5: MLOps, Cloud Deployment, & Job Readiness</h2>
+                        <p class="mt-2 text-md text-gray-600">(4-6 Weeks) Deploy, monitor, and maintain models in a professional setting and prepare for technical interviews.</p>
+                        
+                        <div class="mt-4 max-w-md mx-auto">
+                            <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                <span>Progress</span>
+                                <span>100%</span>
+                            </div>
+                            <div class="progress-bar" data-animate="progress">
+                                <div class="progress-fill" data-width="100%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-server mr-2 text-indigo-500"></i>1. Production Deployment</h3>
+                            <ul>
+                                <li><span>Core:</span> Containerization (Docker), REST APIs (FastAPI), Serverless functions, Model Serving.</li>
+                                <li><span>Additional:</span> FastAPI, Docker basics.</li>
+                            </ul>
+                            
+                            <div class="advanced-content-wrapper">
+                                <div class="advanced-content">
+                                    <h4 class="font-semibold text-gray-800 mb-2">Specialized Deployment:</h4>
+                                    <ul class="space-y-2 p-0">
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Edge deployment (TensorFlow Lite, ONNX Runtime)</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Mobile ML (Core ML, ML Kit)</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Real-time inference optimization</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Batch inference patterns</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </article>
+                        
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-cloud mr-2 text-indigo-500"></i>2. Cloud Platforms</h3>
+                            <ul>
+                                <li><span>Core:</span> Hands-on deployment practice on one major cloud provider's ML stack.</li>
+                                <li><span>Additional:</span> Choose one of <strong>SageMaker (AWS)</strong>, <strong>Azure ML</strong>, or <strong>Google Cloud Vertex AI</strong>.</li>
+                            </ul>
+                            
+                            <div class="advanced-content-wrapper">
+                                <div class="advanced-content">
+                                    <h4 class="font-semibold text-gray-800 mb-2">Cloud & Infrastructure:</h4>
+                                    <ul class="space-y-2 p-0">
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Container orchestration (Kubernetes basics)</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Infrastructure as Code (Terraform, CloudFormation)</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>ML platform design (Metaflow, Kubeflow)</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Cost optimization for ML workloads</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-tasks mr-2 text-indigo-500"></i>3. Pipeline Orchestration</h3>
+                            <ul>
+                                <li><span>Core:</span> MLOps for traditional models and LLMs, including continuous integration/deployment (CI/CD).</li>
+                                <li><span>Additional:</span> MLOps basics.</li>
+                                <li><span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Mandatory (LLMOps):</span> <a href="https://www.deeplearning.ai/short-courses/llmops/" target="_blank" rel="noopener noreferrer" class="resource-link">LLMOps <i class="fas fa-external-link-alt"></i></a></li>
+                            </ul>
+                            
+                            <div class="advanced-content-wrapper">
+                                <div class="advanced-content">
+                                    <h4 class="font-semibold text-gray-800 mb-2">Advanced MLOps:</h4>
+                                    <ul class="space-y-2 p-0">
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Feature stores (Feast, Tecton)</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Model registries</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Data quality monitoring (Great Expectations)</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Model monitoring (evidently.ai, Arize)</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Drift detection (data drift, concept drift)</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-briefcase mr-2 text-indigo-500"></i>4. Job Readiness</h3>
+                            <ul>
+                                <li><span>Core:</span> Data Structures & Algorithms (DSA), System Design (ML-focused), Resume/Portfolio creation.</li>
+                                <li><span>Additional:</span> Portfolio website, DSA, Interview Preparation. (Focus on designing ML systems like a Recommendation Engine or Real-time Fraud Detector).</li>
+                            </ul>
+                            
+                            <div class="advanced-content-wrapper">
+                                <div class="advanced-content">
+                                    <h4 class="font-semibold text-gray-800 mb-2">Soft Skills & Business Acumen:</h4>
+                                    <ul class="space-y-2 p-0">
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>ML project management</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Stakeholder communication</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Business metrics translation</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Experiment design and A/B testing</span></li>
+                                        <li><span class="text-green-600"><i class="fas fa-plus-circle mr-1"></i>Cost-benefit analysis for AI projects</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="info-card md:col-span-2" data-animate="fade-in-up">
+                            <h3><i class="fas fa-chart-pie mr-2 text-indigo-500"></i>Curriculum Focus Distribution</h3>
+                            <div class="p-6">
+                                <p class="text-sm text-gray-600 mb-4 text-center">A visual breakdown of the curriculum's emphasis, helping you understand where to focus your efforts.</p>
+                                <div class="chart-container">
+                                    <canvas id="curriculumChart" aria-label="Curriculum Focus Distribution" role="img"></canvas>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+                
+                <section id="phase-6-content" class="phase-content advanced-phase" aria-labelledby="phase-6-title" role="tabpanel" hidden>
+                    <div class="text-center mb-10">
+                        <h2 id="phase-6-title" class="text-3xl font-semibold text-gray-900">PHASE 6: Advanced Topics & Specializations</h2>
+                        <p class="mt-2 text-md text-gray-600">(8-10 Weeks) Explore cutting-edge AI topics and specialized applications for advanced practitioners.</p>
+                        
+                        <div class="mt-4 max-w-md mx-auto">
+                            <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                <span>Progress</span>
+                                <span>100%</span>
+                            </div>
+                            <div class="progress-bar" data-animate="progress">
+                                <div class="progress-fill" data-width="100%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-brain mr-2 text-indigo-500"></i>Reinforcement Learning</h3>
+                            <ul>
+                                <li><span>Core:</span> Basic concepts (MDP, Q-learning)</li>
+                                <li><span>Core:</span> Deep Q Networks (DQN)</li>
+                                <li><span>Core:</span> Policy Gradient methods</li>
+                                <li><span>Core:</span> RLHF (Reinforcement Learning from Human Feedback)</li>
+                            </ul>
+                        </article>
+                        
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-project-diagram mr-2 text-indigo-500"></i>Graph Neural Networks</h3>
+                            <ul>
+                                <li><span>Core:</span> Graph convolutional networks</li>
+                                <li><span>Core:</span> Knowledge graphs</li>
+                                <li><span>Core:</span> Applications in recommendation systems</li>
+                            </ul>
+                        </article>
+
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-shield-alt mr-2 text-indigo-500"></i>AI Safety & Ethics</h3>
+                            <ul>
+                                <li><span>Core:</span> Model explainability (SHAP, LIME)</li>
+                                <li><span>Core:</span> Fairness and bias detection</li>
+                                <li><span>Core:</span> AI safety principles</li>
+                                <li><span>Core:</span> Responsible AI practices</li>
+                            </ul>
+                        </article>
+
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-eye mr-2 text-indigo-500"></i>Advanced Computer Vision</h3>
+                            <ul>
+                                <li><span>Core:</span> 3D computer vision</li>
+                                <li><span>Core:</span> Video understanding</li>
+                                <li><span>Core:</span> Medical imaging applications</li>
+                                <li><span>Core:</span> Autonomous vehicle perception</li>
+                            </ul>
+                        </article>
+                        
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-microchip mr-2 text-indigo-500"></i>Emerging Technologies</h3>
+                            <ul>
+                                <li><span>Core:</span> AI Hardware (GPUs, TPUs, neuromorphic computing)</li>
+                                <li><span>Core:</span> Federated Learning</li>
+                                <li><span>Core:</span> Differential Privacy</li>
+                                <li><span>Core:</span> Quantum Machine Learning (basic concepts)</li>
+                            </ul>
+                        </article>
+                        
+                        <article class="info-card" data-animate="fade-in-up">
+                            <h3><i class="fas fa-tools mr-2 text-indigo-500"></i>Industry Best Practices</h3>
+                            <ul>
+                                <li><span>Core:</span> ML design patterns</li>
+                                <li><span>Core:</span> Code quality for ML</li>
+                                <li><span>Core:</span> Reproducibility practices</li>
+                                <li><span>Core:</span> Team collaboration workflows</li>
+                                <li><span>Core:</span> Documentation standards</li>
+                            </ul>
+                        </article>
+                    </div>
+                </section>
+            </div>
+        </main>
+        
+        <footer class="mt-16 pt-8 border-t border-gray-200 text-center text-gray-600 text-sm">
+            <>AI Engineer Career Roadmap &copy; 2025 - Designed for aspiring AI professionals. Contribution by JG.</p>
+            <p class="mt-2">This roadmap is a living document and will be updated as the field evolves.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Configuration ---
+            const activeTabClasses = ['text-indigo-600', 'border-indigo-600'];
+            const inactiveTabClasses = ['text-gray-500', 'border-transparent', 'hover:text-gray-800', 'hover:border-gray-300'];
+            
+            // --- State ---
+            let isAdvancedMode = false;
+            let curriculumChart;
+
+            // --- Selectors ---
+            const curriculumToggle = document.getElementById('curriculum-toggle');
+            const curriculumBadge = document.getElementById('curriculum-badge');
+            const advancedTabs = document.querySelectorAll('.advanced-tab');
+            const advancedSteps = document.querySelectorAll('.advanced-step');
+            const phaseNav = document.getElementById('phase-nav');
+            const phaseProgressBar = document.getElementById('phase-progress-bar');
+            
+            const tabs = [
+                { btn: document.getElementById('phase-1-btn'), content: document.getElementById('phase-1-content') },
+                { btn: document.getElementById('phase-2-btn'), content: document.getElementById('phase-2-content') },
+                { btn: document.getElementById('phase-3-btn'), content: document.getElementById('phase-3-content') },
+                { btn: document.getElementById('phase-3.5-btn'), content: document.getElementById('phase-3.5-content') },
+                { btn: document.getElementById('phase-4-btn'), content: document.getElementById('phase-4-content') },
+                { btn: document.getElementById('phase-5-btn'), content: document.getElementById('phase-5-content') },
+                { btn: document.getElementById('phase-6-btn'), content: document.getElementById('phase-6-content') }
+            ];
+            const phaseSteps = document.querySelectorAll('.phase-step');
+
+            // --- Functions ---
+            
+            /**
+             * Main function to show a specific phase
+             */
+            function showPhase(phaseToShow) {
+                // 1. Handle Tab Buttons and Content Visibility
+                tabs.forEach(tab => {
+                    const isActive = tab.content.id === phaseToShow;
+                    
+                    if (isActive) {
+                        tab.content.classList.add('active');
+                        tab.content.removeAttribute('hidden');
+                        tab.btn.classList.add(...activeTabClasses);
+                        tab.btn.classList.remove(...inactiveTabClasses);
+                        tab.btn.setAttribute('aria-selected', 'true');
+                    } else {
+                        tab.content.classList.remove('active');
+                        tab.content.setAttribute('hidden', 'true');
+                        tab.btn.classList.add(...inactiveTabClasses);
+                        tab.btn.classList.remove(...activeTabClasses);
+                        tab.btn.setAttribute('aria-selected', 'false');
+                    }
+                });
+                
+                // 2. Update Phase Step Indicators (Dots)
+                const currentPhase = phaseToShow.split('-')[1];
+                const currentPhaseNum = parseFloat(currentPhase);
+                
+                let currentStepIndex = -1;
+                const visibleSteps = [];
+
+                phaseSteps.forEach((step, index) => {
+                    step.classList.remove('active', 'completed');
+                    const stepPhaseNum = parseFloat(step.dataset.phase);
+                    
+                    // Only consider visible steps for index calculation
+                    if (step.style.display !== 'none') {
+                        visibleSteps.push(step);
+                    }
+
+                    if (step.dataset.phase === currentPhase) {
+                        step.classList.add('active');
+                    } else if (stepPhaseNum < currentPhaseNum) {
+                        step.classList.add('completed');
+                    }
+                });
+                
+                // 3. Update Phase Progress Bar (Line)
+                // Find the index of the current step *among visible steps*
+                currentStepIndex = visibleSteps.findIndex(step => step.dataset.phase === currentPhase);
+                
+                const progressPercentage = (currentStepIndex <= 0) ? 0 : (currentStepIndex / (visibleSteps.length - 1)) * 100;
+                phaseProgressBar.style.width = progressPercentage + '%';
+            }
+
+            /**
+             * Initialize Chart.js
+             */
+            function initializeChart() {
+                const ctx = document.getElementById('curriculumChart').getContext('2d');
+                curriculumChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Phase 1: Foundations', 'Phase 2: Core ML', 'Phase 3: Deep Learning', 'Phase 4: Generative AI', 'Phase 5: MLOps & Jobs'],
+                        datasets: [{
+                            label: 'Curriculum Focus',
+                            data: [15, 20, 20, 30, 15],
+                            backgroundColor: [
+                                '#4f46e5', 
+                                '#10b981', 
+                                '#f59e0b', 
+                                '#ec4899', 
+                                '#6366f1'  
+                            ],
+                            hoverOffset: 4,
+                            borderWidth: 0,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    boxWidth: 12,
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed !== null) {
+                                            label += context.parsed + '%';
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            function updateChartForAdvanced() {
+                if (curriculumChart) {
+                    curriculumChart.data.labels = [
+                        'Phase 1: Foundations', 
+                        'Phase 2: Core ML', 
+                        'Phase 3: Deep Learning',
+                        'Phase 3.5: Specialized Apps',
+                        'Phase 4: Generative AI', 
+                        'Phase 5: MLOps & Jobs',
+                        'Phase 6: Advanced Topics'
+                    ];
+                    curriculumChart.data.datasets[0].data = [12, 15, 15, 12, 20, 14, 12];
+                    curriculumChart.data.datasets[0].backgroundColor = [
+                        '#4f46e5', 
+                        '#10b981', 
+                        '#f59e0b',
+                        '#8b5cf6',
+                        '#ec4899', 
+                        '#6366f1',
+                        '#06b6d4'
+                    ];
+                    curriculumChart.update();
+                }
+            }
+            
+            function updateChartForDefault() {
+                if (curriculumChart) {
+                    curriculumChart.data.labels = [
+                        'Phase 1: Foundations', 
+                        'Phase 2: Core ML', 
+                        'Phase 3: Deep Learning', 
+                        'Phase 4: Generative AI', 
+                        'Phase 5: MLOps & Jobs'
+                    ];
+                    curriculumChart.data.datasets[0].data = [15, 20, 20, 30, 15];
+                    curriculumChart.data.datasets[0].backgroundColor = [
+                        '#4f46e5', 
+                        '#10b981', 
+                        '#f59e0b', 
+                        '#ec4899', 
+                        '#6366f1'  
+                    ];
+                    curriculumChart.update();
+                }
+            }
+
+            // --- Event Listeners ---
+            
+            // Curriculum Toggle
+            curriculumToggle.addEventListener('click', () => {
+                isAdvancedMode = !isAdvancedMode;
+                const activePhaseId = document.querySelector('.phase-content.active').id;
+                
+                if (isAdvancedMode) {
+                    document.body.classList.add('advanced-mode');
+                    curriculumToggle.innerHTML = '<i class="fas fa-user-cog mr-2"></i>Switch to Default Curriculum';
+                    curriculumToggle.classList.add('advanced');
+                    curriculumBadge.style.display = 'inline-flex';
+                    advancedTabs.forEach(tab => tab.style.display = 'block');
+                    advancedSteps.forEach(step => step.style.display = 'flex');
+                    updateChartForAdvanced();
+                } else {
+                    document.body.classList.remove('advanced-mode');
+                    curriculumToggle.innerHTML = '<i class="fas fa-graduation-cap mr-2"></i>Switch to Advanced Curriculum';
+                    curriculumToggle.classList.remove('advanced');
+                    curriculumBadge.style.display = 'none';
+                    advancedTabs.forEach(tab => tab.style.display = 'none');
+                    advancedSteps.forEach(step => step.style.display = 'none');
+                    updateChartForDefault();
+                }
+                
+                // If on an advanced tab, switch to phase 1, otherwise refresh current
+                if (!isAdvancedMode && document.getElementById(activePhaseId).classList.contains('advanced-phase')) {
+                    showPhase('phase-1-content');
+                } else {
+                    showPhase(activePhaseId); // Recalculate progress bar
+                }
+            });
+            
+            // Tab Buttons
+            tabs.forEach(tab => {
+                if (tab.btn) {
+                    tab.btn.addEventListener('click', () => {
+                        showPhase(tab.content.id);
+                    });
+                    
+                    tab.btn.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            showPhase(tab.content.id);
+                        }
+                    });
+                }
+            });
+            
+            // Intersection Observer for Animations
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        
+                        // Handle progress bar animation
+                        if (entry.target.dataset.animate === 'progress') {
+                            const fill = entry.target.querySelector('.progress-fill');
+                            const targetWidth = fill.dataset.width;
+                            if (targetWidth) {
+                                 fill.style.width = targetWidth; 
+                            }
+                        }
+                        observer.unobserve(entry.target); // Animate only once
+                    }
+                });
+            }, { threshold: 0.1 }); // Trigger when 10% is visible
+
+            // Observe all animated elements
+            document.querySelectorAll('[data-animate]').forEach(el => {
+                observer.observe(el);
+            });
+
+
+            // --- Initialization ---
+            initializeChart();
+            showPhase('phase-1-content'); // Show first phase by default
+        });
+    </script>
+</body>
+</html>
